@@ -18,6 +18,7 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 public class JTrovaAScuola extends Application {
+	
 	GridPane area = new GridPane();
 
 	Button pCerca = new Button("CERCA");
@@ -53,18 +54,26 @@ public class JTrovaAScuola extends Application {
 		area.add(tOra, 1, 0);
 		area.add(lGiorni, 0, 1);
 		area.add(tGiorni, 1, 1);
-		area.add(classe, 0, 2);
-		area.add(docente, 1, 2);
-		area.add(pCerca, 0, 4);
-		area.add(tClasse, 0, 3);
-		area.add(tDocente, 1, 3);
-		area.add(lRisposta, 1, 4);
+		area.add(tDocente, 1, 2);
+		area.add(docente, 0, 2);
+		area.add(pCerca, 0, 4, 2, 1);
+		area.add(tClasse, 1, 3);
+		area.add(classe, 0, 3);
+		area.add(lRisposta, 0, 5, 2, 1);
+		
+		lRisposta.setMaxWidth(Integer.MAX_VALUE);
+		pCerca.setMaxWidth(Integer.MAX_VALUE);
+		
+		
 		// area.add(spin, 0, 3);
 
-		Scene scena = new Scene(area, 600, 600);
+		Scene scena = new Scene(area, 250, 220);
 		Finestra.setScene(scena);
 		Finestra.setTitle("Bot Telegram");
 		Finestra.show();
+		Finestra.setResizable(false);
+		scena.getStylesheets().add("progettoPON/ricerca.css");
+		area.setId("pannello");
 		pCerca.setOnAction(e -> cerca());
 		classe.setOnAction(e -> classe());
 		docente.setOnAction(e -> classe());
