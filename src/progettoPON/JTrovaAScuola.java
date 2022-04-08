@@ -7,9 +7,9 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import javafx.application.Application;
-import javafx.event.Event;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
@@ -26,12 +26,13 @@ public class JTrovaAScuola extends Application {
 	Label lOra = new Label("Inserisci ora:");
 	Label lGiorni = new Label("Giorni");
 	Label lRisposta = new Label();
-
+	
 	TextField tOra = new TextField();
 	TextField tGiorni = new TextField();
-	TextField tClasse = new TextField();
-	TextField tDocente = new TextField();
 
+	ComboBox<String> comboClassi = new ComboBox<>();
+	ComboBox<String> comboDocenti = new ComboBox<>();
+	
 	// Spinner spin=new Spinner();
 
 	RadioButton classe = new RadioButton("Classe");
@@ -39,31 +40,30 @@ public class JTrovaAScuola extends Application {
 
 	ArrayList<String[]> righeFile = new ArrayList<>();
 	
-	int pos = 3;
+	boolean trovato = false, trovatoC = false;
+	int pos = 3, c = 0;
 		
 	@Override
 	public void start(Stage Finestra) throws Exception {
 		ToggleGroup gruppo = new ToggleGroup();
 		classe.setToggleGroup(gruppo);
 		docente.setToggleGroup(gruppo);
-		tDocente.setDisable(true);
-		
-		classe.setSelected(true);
-		
+		comboClassi.setDisable(true);
+		docente.setSelected(true);
 		area.add(lOra, 0, 0);
 		area.add(tOra, 1, 0);
 		area.add(lGiorni, 0, 1);
 		area.add(tGiorni, 1, 1);
-		area.add(tDocente, 1, 2);
+		area.add(comboDocenti, 1, 2);
 		area.add(docente, 0, 2);
 		area.add(pCerca, 0, 4, 2, 1);
-		area.add(tClasse, 1, 3);
+		area.add(comboClassi, 1, 3);
 		area.add(classe, 0, 3);
 		area.add(lRisposta, 0, 5, 2, 1);
 		
+		
 		lRisposta.setMaxWidth(Integer.MAX_VALUE);
 		pCerca.setMaxWidth(Integer.MAX_VALUE);
-		
 		
 		// area.add(spin, 0, 3);
 
@@ -79,6 +79,7 @@ public class JTrovaAScuola extends Application {
 		docente.setOnAction(e -> classe());
 		
 		String rigaLetta;
+		
 		try {
 			FileInputStream fis = new FileInputStream(
 					"C:\\Users\\alessandromaggio\\Desktop\\Workspace\\jTrovaAScuola\\OreClassiDocenti.csv");
@@ -88,9 +89,28 @@ public class JTrovaAScuola extends Application {
 			do {
 				rigaLetta = input.readLine();
 				if (rigaLetta != null) {
+					trovato = trovatoC = false;
 					righeFile.add(rigaLetta.split(";"));
+					for (int i = 0; i<comboDocenti.getItems().size(); i++) {
+						if ((righeFile.get(c)[0]).equals(comboDocenti.getItems().get(i))) {
+							trovato = true;
+							break;
+						}
+					}
+					for (int i = 0; i<comboClassi.getItems().size(); i++) {
+						if ((righeFile.get(c)[3]).equals(comboClassi.getItems().get(i))) {
+							trovatoC = true;
+							break;
+						}
+					}
+					if (!trovato) {
+						comboDocenti.getItems().add(righeFile.get(c)[0]);
+					}
+					if (!trovatoC) {
+						comboClassi.getItems().add(righeFile.get(c)[3]);
+					}
+					c++;
 				}
-				
 			} while (rigaLetta != null);
 			
 		} catch (IOException e) {
@@ -104,21 +124,17 @@ public class JTrovaAScuola extends Application {
 		String ora = tOra.getText();
 		String giorno = tGiorni.getText();
 		
-		String classe = tClasse.getText();
-		String docente = tDocente.getText();
-		
 		for(int i = 0; i<righeFile.size(); i++) {
 			// docente;giorno;ora;classe;sezione
 			// 0,1,2,3,4
-			if (righeFile.get(i)[pos].equals(classe) && righeFile.get(i)[2].equals(ora) && righeFile.get(i)[1].equals(giorno)) {
+			if (righeFile.get(i)[pos].equals(comboClassi.getValue()) && righeFile.get(i)[2].equals(ora) && righeFile.get(i)[1].equals(giorno)) {
 				trovato=true;
 				lRisposta.setText(righeFile.get(i)[0]+", numero aula: "+righeFile.get(i)[4]);
 				break;
-			} else if (righeFile.get(i)[pos].equals(docente) && righeFile.get(i)[2].equals(ora) && righeFile.get(i)[1].equals(giorno)) {
+			} else if (righeFile.get(i)[pos].equals(comboDocenti.getValue()) && righeFile.get(i)[2].equals(ora) && righeFile.get(i)[1].equals(giorno)) {
 				lRisposta.setText("classe: "+righeFile.get(i)[3]+", numero aula: "+righeFile.get(i)[4]);
 				trovato=true;
 				break;
-				
 			}
 			
 			if(!trovato) {
@@ -133,14 +149,12 @@ public class JTrovaAScuola extends Application {
 	private void classe() {
 		if (classe.isSelected()) {
 			pos = 3;
-			tDocente.setText("");
-			tClasse.setDisable(false);
-			tDocente.setDisable(true);
+			comboClassi.setDisable(false);
+			comboDocenti.setDisable(true);
 		}else {
 			pos = 0;
-			tClasse.setText("");
-			tDocente.setDisable(false);
-			tClasse.setDisable(true);
+			comboDocenti.setDisable(false);
+			comboClassi.setDisable(true);
 		}
 		
 	}
@@ -149,3 +163,10 @@ public class JTrovaAScuola extends Application {
 		launch(args);
 	}
 }
+/*
+ * 					if(i!=0 && !righeFile.get(i)[0].equals(righeFile.get(i-1)[0])) {
+						comboDocenti.getItems().add(righeFile.get(i-1)[0]);
+					}
+					i++;
+					
+ * */
