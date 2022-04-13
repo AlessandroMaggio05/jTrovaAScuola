@@ -3,3 +3,11 @@
 	-fx-hgap:10;
 	-fx-vgap:10;
 }
+.combo-box-popup .list-view .list-cell:hover{
+    -fx-background: -fx-accent;
+    -fx-background-color: yellow;
+    -fx-text-fill: black;
+}
+.button:hover{
+	-fx-background-color:lightblue;
+}

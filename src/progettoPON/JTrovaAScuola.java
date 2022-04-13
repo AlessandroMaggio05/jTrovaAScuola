@@ -28,10 +28,11 @@ public class JTrovaAScuola extends Application {
 	Label lRisposta = new Label();
 	
 	TextField tOra = new TextField();
-	TextField tGiorni = new TextField();
 
 	ComboBox<String> comboClassi = new ComboBox<>();
 	ComboBox<String> comboDocenti = new ComboBox<>();
+	ComboBox<String> comboSettimana = new ComboBox<>();
+	
 	
 	// Spinner spin=new Spinner();
 
@@ -49,11 +50,11 @@ public class JTrovaAScuola extends Application {
 		classe.setToggleGroup(gruppo);
 		docente.setToggleGroup(gruppo);
 		comboClassi.setDisable(true);
-		docente.setSelected(true);
-		area.add(lOra, 0, 0);
+		comboDocenti.setDisable(true);
+		area.add(lOra, 0, 0,2,1);
 		area.add(tOra, 1, 0);
 		area.add(lGiorni, 0, 1);
-		area.add(tGiorni, 1, 1);
+		area.add(comboSettimana, 1, 1);
 		area.add(comboDocenti, 1, 2);
 		area.add(docente, 0, 2);
 		area.add(pCerca, 0, 4, 2, 1);
@@ -78,11 +79,21 @@ public class JTrovaAScuola extends Application {
 		classe.setOnAction(e -> classe());
 		docente.setOnAction(e -> classe());
 		
+		comboSettimana.getItems().add("lunedi");
+		comboSettimana.getItems().add("martedi");
+		comboSettimana.getItems().add("mercoledi");
+		comboSettimana.getItems().add("giovedi");
+		comboSettimana.getItems().add("venerdi");
+		/*comboSettimana.getItems().set(0, "lunedi");
+		comboSettimana.getItems().set(1, "martedi");
+		comboSettimana.getItems().set(2, "mercoledi");
+		comboSettimana.getItems().set(3, "giovedi");
+		comboSettimana.getItems().set(4, "venerdi");*/
+		
 		String rigaLetta;
 		
 		try {
-			FileInputStream fis = new FileInputStream(
-					"C:\\Users\\alessandromaggio\\Desktop\\Workspace\\jTrovaAScuola\\OreClassiDocenti.csv");
+			FileInputStream fis = new FileInputStream("OreClasseDocenti.csv");
 			InputStreamReader isr = new InputStreamReader(fis, "ISO8859-1");
 			BufferedReader input = new BufferedReader(isr);
 
@@ -122,16 +133,15 @@ public class JTrovaAScuola extends Application {
 		boolean trovato=false;
 		
 		String ora = tOra.getText();
-		String giorno = tGiorni.getText();
-		
+		//String giorno = tGiorni.getText();
 		for(int i = 0; i<righeFile.size(); i++) {
 			// docente;giorno;ora;classe;sezione
 			// 0,1,2,3,4
-			if (righeFile.get(i)[pos].equals(comboClassi.getValue()) && righeFile.get(i)[2].equals(ora) && righeFile.get(i)[1].equals(giorno)) {
+			if (righeFile.get(i)[pos].equals(comboClassi.getValue()) && righeFile.get(i)[2].equals(ora) && righeFile.get(i)[1].equals(""+comboSettimana.getSelectionModel().getSelectedIndex())) {
 				trovato=true;
 				lRisposta.setText(righeFile.get(i)[0]+", numero aula: "+righeFile.get(i)[4]);
 				break;
-			} else if (righeFile.get(i)[pos].equals(comboDocenti.getValue()) && righeFile.get(i)[2].equals(ora) && righeFile.get(i)[1].equals(giorno)) {
+			} else if (righeFile.get(i)[pos].equals(comboDocenti.getValue()) && righeFile.get(i)[2].equals(ora) && righeFile.get(i)[1].equals(""+comboSettimana.getSelectionModel().getSelectedIndex())) {
 				lRisposta.setText("classe: "+righeFile.get(i)[3]+", numero aula: "+righeFile.get(i)[4]);
 				trovato=true;
 				break;
@@ -147,14 +157,14 @@ public class JTrovaAScuola extends Application {
 	}
 	
 	private void classe() {
-		if (classe.isSelected()) {
-			pos = 3;
-			comboClassi.setDisable(false);
-			comboDocenti.setDisable(true);
-		}else {
+		if (docente.isSelected()) {
 			pos = 0;
 			comboDocenti.setDisable(false);
 			comboClassi.setDisable(true);
+		}else {
+			pos = 3;
+			comboClassi.setDisable(false);
+			comboDocenti.setDisable(true);
 		}
 		
 	}
